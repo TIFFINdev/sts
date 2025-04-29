@@ -358,7 +358,7 @@ More comprehensive version at shenanigans.shoghisimon.ca/collection/css-blur-blo
                 726px 576px,
                 1242px 454px,
                 876px 1160px,
-                691px 873px,    
+                691px 873px,
                 914px 550px,
                 1159px 340px,
                 1017px 831px,
@@ -416,6 +416,11 @@ More comprehensive version at shenanigans.shoghisimon.ca/collection/css-blur-blo
                 <h1 style="text-align: center; margin-bottom: 30px;">Advanced Competitive Coding Practice</h1>
                 <div class="options-container">
                     <div class="card">
+                        <h2 class="card-title">Practice Face PDF Questions</h2>
+                        <p class="card-description" style="color: white;">Go through Face PDF questions at your own pace in randomized order.</p>
+                        <button class="btn btn-block" id="startPractice2">Start Practice</button>
+                    </div>
+                    <div class="card">
                         <h2 class="card-title">Mock MCQ Exam</h2>
                         <p class="card-description" style="color: white;">Take a mock exam with 30 random
                             questions to test your
@@ -447,16 +452,29 @@ More comprehensive version at shenanigans.shoghisimon.ca/collection/css-blur-blo
                 </div>
             </div>
 
-            <!-- Practice View -->
-            <div id="practiceView" style="display: none;">
+            <div id="practiceView2" style="display: none;">
                 <div class="card question-card">
                     <div class="question-number" id="practiceQuestionNumber">Question 1</div>
                     <div class="question-text" id="practiceQuestionText"></div>
                     <div class="options" id="practiceOptions"></div>
                     <div class="feedback" id="practiceFeedback"></div>
                     <div class="practice-controls">
-                        <button class="btn" id="practicePrevButton" disabled>Previous</button>
-                        <button class="btn" id="practiceNextButton">Next</button>
+                        <button class="btn" id="practicePrevButton2" disabled>Previous</button>
+                        <button class="btn" id="practiceNextButton2">Next</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Practice View -->
+            <div id="practiceView" style="display: none;">
+                <div class="card question-card">
+                    <div class="question-number" id="practiceQuestionNumber1">Question 1</div>
+                    <div class="question-text" id="practiceQuestionText1"></div>
+                    <div class="options" id="practiceOptions1"></div>
+                    <div class="feedback" id="practiceFeedback1"></div>
+                    <div class="practice-controls">
+                        <button class="btn" id="practicePrevButton1" disabled>Previous</button>
+                        <button class="btn" id="practiceNextButton1">Next</button>
                     </div>
                 </div>
             </div>
@@ -475,7 +493,7 @@ More comprehensive version at shenanigans.shoghisimon.ca/collection/css-blur-blo
             </div>
         </div>
     </main>
-    <footer style="color: white; width: 100%; text-align: center; margin-top:60px; margin-bottom: 10pxs;">
+    <footer style="color: white; width: 100%; text-align: center; margin-top:50%; margin-bottom: 10pxs;">
         Made by Ayushman Tomar
     </footer>
 
@@ -488,6 +506,9 @@ More comprehensive version at shenanigans.shoghisimon.ca/collection/css-blur-blo
         let mockAnswers = [];
         let mockCorrectAnswers = 0;
 
+        let allQuestions2 = [];
+        let currentPracticeQuestion2 = 0;
+
         // DOM Elements
         const homeView = document.getElementById('homeView');
         const mockExamView = document.getElementById('mockExamView');
@@ -498,8 +519,8 @@ More comprehensive version at shenanigans.shoghisimon.ca/collection/css-blur-blo
         const startMockExamButton = document.getElementById('startMockExam');
         const startPracticeButton = document.getElementById('startPractice');
         const mockNextButton = document.getElementById('mockNextButton');
-        const practicePrevButton = document.getElementById('practicePrevButton');
-        const practiceNextButton = document.getElementById('practiceNextButton');
+        const practicePrevButton = document.getElementById('practicePrevButton1');
+        const practiceNextButton = document.getElementById('practiceNextButton1');
         const retryButton = document.getElementById('retryButton');
         const homeButton = document.getElementById('homeButton');
         const homeFromResultsButton = document.getElementById('homeFromResultsButton');
@@ -512,10 +533,16 @@ More comprehensive version at shenanigans.shoghisimon.ca/collection/css-blur-blo
         const mockProgress = document.getElementById('mockProgress');
 
         // Practice Elements
-        const practiceQuestionNumber = document.getElementById('practiceQuestionNumber');
-        const practiceQuestionText = document.getElementById('practiceQuestionText');
-        const practiceOptions = document.getElementById('practiceOptions');
-        const practiceFeedback = document.getElementById('practiceFeedback');
+        const practiceQuestionNumber = document.getElementById('practiceQuestionNumber1');
+        const practiceQuestionText = document.getElementById('practiceQuestionText1');
+        const practiceQuestionNumber2 = document.getElementById('practiceQuestionNumber');
+        const practiceQuestionText2 = document.getElementById('practiceQuestionText');
+        const practiceOptions = document.getElementById('practiceOptions1');
+        const practiceFeedback = document.getElementById('practiceFeedback1');
+
+        const practiceOptions2 = document.getElementById('practiceOptions');
+        const practiceFeedback2 = document.getElementById('practiceFeedback');
+        
 
         // Results Elements
         const scoreDisplay = document.getElementById('scoreDisplay');
@@ -671,8 +698,163 @@ More comprehensive version at shenanigans.shoghisimon.ca/collection/css-blur-blo
             }
         }
 
+
+
+
+        async function loadQuestions2() {
+            try {
+                // Show loading indicator
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = 'loading';
+                loadingDiv.innerHTML = '<div class="loading-spinner"></div><p style="margin-left: 15px;">Loading questions...</p>';
+                document.getElementById('mainContent').prepend(loadingDiv);
+
+                // Fetch questions from JSON file
+                const response = await fetch('q2.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                if (!data || !Array.isArray(data) || data.length === 0) {
+                    throw new Error('Invalid or empty question data');
+                }
+
+                console.log('Questions loaded:', data.length);
+                allQuestions2 = data;
+
+                // Remove loading indicator
+                loadingDiv.remove();
+
+                // Fallback to sample questions if fetching fails
+                if (allQuestions2.length === 0) {
+                    console.warn('Using fallback questions');
+                    allQuestions2 = [
+                        {
+                            "question": "What is the primary technique used to detect a loop in a Doubly Linked List (DLL)?",
+                            "options": {
+                                "A": "Using two pointers, one slow and one fast (Floyd's Cycle-Finding Algorithm)",
+                                "B": "Marking visited nodes using an extra field",
+                                "C": "Using a Hash Set to store visited node addresses",
+                                "D": "All of the above"
+                            },
+                            "correct_answer": "D"
+                        },
+                        {
+                            "question": "What is the time complexity of detecting a loop in a DLL of size 'n' using Floyd's Cycle-Finding Algorithm?",
+                            "options": {
+                                "A": "O(1)",
+                                "B": "O(log n)",
+                                "C": "O(n)",
+                                "D": "O(n^2)"
+                            },
+                            "correct_answer": "C"
+                        },
+                        {
+                            "question": "What is the auxiliary space complexity of detecting a loop in a DLL using Floyd's Cycle-Finding Algorithm?",
+                            "options": {
+                                "A": "O(1)",
+                                "B": "O(log n)",
+                                "C": "O(n)",
+                                "D": "O(n^2)"
+                            },
+                            "correct_answer": "A"
+                        },
+                        {
+                            "question": "What is the primary characteristic of a bitonic DLL?",
+                            "options": {
+                                "A": "It contains only even numbers.",
+                                "B": "It is first strictly increasing and then strictly decreasing, or vice-versa.",
+                                "C": "All nodes are duplicated.",
+                                "D": "It forms a cycle."
+                            },
+                            "correct_answer": "B"
+                        },
+                        {
+                            "question": "What is an efficient time complexity to sort a Bitonic Doubly Linked List of size 'n'?",
+                            "options": {
+                                "A": "O(n^2)",
+                                "B": "O(n log n)",
+                                "C": "O(n)",
+                                "D": "O(log n)"
+                            },
+                            "correct_answer": "B"
+                        }
+                    ];
+                }
+
+                return true;
+            } catch (error) {
+                console.error('Error loading questions:', error);
+
+                // Show error and use fallback questions
+                alert('Error loading questions from file. Using sample questions instead.');
+
+                allQuestions2 = [
+                    {
+                        "question": "What is the primary technique used to detect a loop in a Doubly Linked List (DLL)?",
+                        "options": {
+                            "A": "Using two pointers, one slow and one fast (Floyd's Cycle-Finding Algorithm)",
+                            "B": "Marking visited nodes using an extra field",
+                            "C": "Using a Hash Set to store visited node addresses",
+                            "D": "All of the above"
+                        },
+                        "correct_answer": "D"
+                    },
+                    {
+                        "question": "What is the time complexity of detecting a loop in a DLL of size 'n' using Floyd's Cycle-Finding Algorithm?",
+                        "options": {
+                            "A": "O(1)",
+                            "B": "O(log n)",
+                            "C": "O(n)",
+                            "D": "O(n^2)"
+                        },
+                        "correct_answer": "C"
+                    },
+                    {
+                        "question": "What is the auxiliary space complexity of detecting a loop in a DLL using Floyd's Cycle-Finding Algorithm?",
+                        "options": {
+                            "A": "O(1)",
+                            "B": "O(log n)",
+                            "C": "O(n)",
+                            "D": "O(n^2)"
+                        },
+                        "correct_answer": "A"
+                    },
+                    {
+                        "question": "What is the primary characteristic of a bitonic DLL?",
+                        "options": {
+                            "A": "It contains only even numbers.",
+                            "B": "It is first strictly increasing and then strictly decreasing, or vice-versa.",
+                            "C": "All nodes are duplicated.",
+                            "D": "It forms a cycle."
+                        },
+                        "correct_answer": "B"
+                    },
+                    {
+                        "question": "What is an efficient time complexity to sort a Bitonic Doubly Linked List of size 'n'?",
+                        "options": {
+                            "A": "O(n^2)",
+                            "B": "O(n log n)",
+                            "C": "O(n)",
+                            "D": "O(log n)"
+                        },
+                        "correct_answer": "B"
+                    }
+                ];
+
+                // Remove loading indicator if it exists
+                const loadingDiv = document.querySelector('.loading');
+                if (loadingDiv) loadingDiv.remove();
+
+                return true;
+            }
+        }
+
+
+
         // Fisher-Yates shuffle algorithm
-        function shuffleArray(array) {
+        function shuffleArray1(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [array[i], array[j]] = [array[j], array[i]];
@@ -688,7 +870,7 @@ More comprehensive version at shenanigans.shoghisimon.ca/collection/css-blur-blo
             mockCorrectAnswers = 0;
 
             // Select 30 random questions (or all if less than 30)
-            const shuffled = shuffleArray([...allQuestions]);
+            const shuffled = shuffleArray1([...allQuestions]);
             mockQuestions = shuffled.slice(0, Math.min(30, shuffled.length));
 
             // Initialize mock answers array
@@ -808,6 +990,7 @@ More comprehensive version at shenanigans.shoghisimon.ca/collection/css-blur-blo
 
         // Display practice question
         function displayPracticeQuestion() {
+            // console.log(allQuestions)
             const question = allQuestions[currentPracticeQuestion];
             practiceQuestionNumber.textContent = `Question ${currentPracticeQuestion + 1}/${allQuestions.length}`;
             practiceQuestionText.textContent = question.question;
@@ -826,7 +1009,7 @@ More comprehensive version at shenanigans.shoghisimon.ca/collection/css-blur-blo
 
                 optionElement.addEventListener('click', function () {
                     // Clear any previous selections
-                    document.querySelectorAll('#practiceOptions .option').forEach(opt => {
+                    document.querySelectorAll('#practiceOptions1 .option').forEach(opt => {
                         opt.classList.remove('selected', 'correct', 'incorrect');
                     });
 
@@ -836,7 +1019,7 @@ More comprehensive version at shenanigans.shoghisimon.ca/collection/css-blur-blo
 
                     // If incorrect, highlight the correct answer
                     if (!isCorrect) {
-                        document.querySelector(`#practiceOptions .option[data-option="${question.correct_answer}"]`)
+                        document.querySelector(`#practiceOptions1 .option[data-option="${question.correct_answer}"]`)
                             .classList.add('correct');
                     }
 
@@ -855,8 +1038,90 @@ More comprehensive version at shenanigans.shoghisimon.ca/collection/css-blur-blo
             practiceNextButton.disabled = currentPracticeQuestion === allQuestions.length - 1;
         }
 
+
+
+
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                // Generate a random index
+                const randomIndex = Math.floor(Math.random() * (i + 1));
+
+                // Swap elements
+                [array[i], array[randomIndex]] = [array[randomIndex], array[i]];
+            }
+        }
+
+        
+
+
+        // Start Practice
+        function startPractice2() {
+            // Reset state
+            currentPracticeQuestion2 = 0;
+            // Shuffle the allquestion2 array
+            shuffleArray(allQuestions2);
+
+            // Switch to practice view
+            homeView.style.display = 'none';
+            document.getElementById("practiceView2").style.display = 'block';
+
+            // Display first question
+            displayPracticeQuestion2();
+        }
+
+        // Display practice question
+        function displayPracticeQuestion2() {
+            const question = allQuestions2[currentPracticeQuestion2];
+            practiceQuestionNumber2.textContent = `Question ${currentPracticeQuestion2 + 1}/${allQuestions2.length}`;
+            practiceQuestionText2.textContent = question.question;
+
+            // Clear options and feedback
+            practiceOptions2.innerHTML = '';
+            practiceFeedback2.innerHTML = '';
+            practiceFeedback2.className = 'feedback';
+
+            // Reset all options
+            for (const [key, value] of Object.entries(question.options)) {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.textContent = `${key}: ${value}`;
+                optionElement.dataset.option = key;
+
+                optionElement.addEventListener('click', function () {
+                    // Clear any previous selections
+                    document.querySelectorAll('#practiceOptions2 .option').forEach(opt => {
+                        opt.classList.remove('selected', 'correct', 'incorrect');
+                    });
+
+                    // Mark this option
+                    const isCorrect = key === question.correct_option;
+                    optionElement.classList.add(isCorrect ? 'correct' : 'incorrect');
+
+                    // If incorrect, highlight the correct answer
+                    if (!isCorrect) {
+                        document.querySelector(`#practiceOptions .option[data-option="${question.correct_option}"]`)
+                            .classList.add('correct');
+                    }
+
+                    // Show feedback
+                    practiceFeedback2.className = `feedback visible ${isCorrect ? 'correct' : 'incorrect'}`;
+                    practiceFeedback2.textContent = isCorrect ?
+                        'Correct! Well done.' :
+                        `Incorrect. The correct answer is ${question.correct_option}.`;
+                });
+
+                practiceOptions2.appendChild(optionElement);
+            }
+
+            // Update navigation buttons
+            document.getElementById("practicePrevButton2").disabled = currentPracticeQuestion2 === 0;
+            practiceNextButton.disabled = currentPracticeQuestion2 === allQuestions2.length - 1;
+        }
+
         // Handle practice navigation
         function handlePracticePrev() {
+            console.log("inside")
             if (currentPracticeQuestion > 0) {
                 currentPracticeQuestion--;
                 displayPracticeQuestion();
@@ -876,6 +1141,7 @@ More comprehensive version at shenanigans.shoghisimon.ca/collection/css-blur-blo
             practiceView.style.display = 'none';
             resultsView.style.display = 'none';
             homeView.style.display = 'block';
+            document.getElementById("practiceView2").style.display = 'none';
         }
 
         // Initialize
@@ -886,16 +1152,41 @@ More comprehensive version at shenanigans.shoghisimon.ca/collection/css-blur-blo
                 alert('Error loading questions. Please try again later.');
                 return;
             }
+            const loaded2 = await loadQuestions2();
+            if (!loaded) {
+                alert('Error loading questions. Please try again later.');
+                return;
+            }
 
             // Set up event listeners
             startMockExamButton.addEventListener('click', startMockExam);
             startPracticeButton.addEventListener('click', startPractice);
+            document.getElementById('startPractice2').addEventListener('click', startPractice2);
             mockNextButton.addEventListener('click', handleMockNext);
             practicePrevButton.addEventListener('click', handlePracticePrev);
             practiceNextButton.addEventListener('click', handlePracticeNext);
+            document.getElementById('practicePrevButton2').addEventListener('click', handlePracticePrev2);
+            document.getElementById('practiceNextButton2').addEventListener('click', handlePracticeNext2);
             retryButton.addEventListener('click', startMockExam);
             homeButton.addEventListener('click', goToHome);
             homeFromResultsButton.addEventListener('click', goToHome);
+        }
+
+
+        // Handle practice navigation
+        function handlePracticePrev2() {
+            console.log("insise prev");
+            if (currentPracticeQuestion2 > 0) {
+                currentPracticeQuestion2--;
+                displayPracticeQuestion2();
+            }
+        }
+
+        function handlePracticeNext2() {
+            if (currentPracticeQuestion2 < allQuestions2.length - 1) {
+                currentPracticeQuestion2++;
+                displayPracticeQuestion2();
+            }
         }
 
         // Start the app
